@@ -2,9 +2,11 @@ name: GithubAction
 
 on:
   push:
-    branches: [dev]
+    branches:
+     - dev
   pull_request:
-    branches: [dev]
+    branches:
+    - dev
 
 jobs:
   build:
@@ -28,10 +30,16 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build project
-        run: ./gradlew clean build
+        run: ./gradlew clean test
 
       - name: List dependency graph reports
-        run: ls -la dependency-graph-reports || echo "No reports generated"
+        run: |
+          if [ -d dependency-graph-reports ]; then
+            ls -l dependency-graph-reports
+            cat dependency-graph-reports/githubaction-build.json || echo "File is missing or empty"
+          else
+            echo "dependency-graph-reports directory not found"
+          fi
 
       - name: Submit dependency graph
         uses: gradle/actions/dependency-submission@v3
