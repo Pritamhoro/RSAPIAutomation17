@@ -28,7 +28,15 @@ jobs:
       - name: Run tests
         run: ./gradlew clean test
 
+      - name: List dependency graph files
+        run: ls -l dependency-graph-reports || echo "No dependency-graph-reports directory"
+
+      - name: Show dependency graph content (first 20 lines)
+        run: head -n 20 dependency-graph-reports/githubaction-build.json || echo "No dependency graph file"
+
       - name: Submit dependency graph
+        if: ${{ success() && steps.show-dependency-graph-content.outcome == 'success' }}
         uses: gradle/actions/dependency-submission@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          report-path: dependency-graph-reports/githubaction-build.json
