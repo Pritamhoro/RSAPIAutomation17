@@ -12,10 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
       - uses: actions/checkout@v4
 
@@ -26,20 +22,8 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Grant execute permission for Gradle wrapper
-        run: chmod +x ./gradlew
-
-      - name: Build project
+      - name: Build project and test
         run: ./gradlew clean test
-
-      - name: List dependency graph reports
-        run: |
-          if [ -d dependency-graph-reports ]; then
-            ls -l dependency-graph-reports
-            cat dependency-graph-reports/githubaction-build.json || echo "File is missing or empty"
-          else
-            echo "dependency-graph-reports directory not found"
-          fi
 
       - name: Submit dependency graph
         uses: gradle/actions/dependency-submission@v3
