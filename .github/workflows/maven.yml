@@ -2,7 +2,6 @@ name: GithubAction
 
 permissions:
   contents: read
-  dependency-graph: write
 
 on:
   push:
