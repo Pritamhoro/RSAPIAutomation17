@@ -19,9 +19,6 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: Checkout code
-      uses: actions/checkout@v3
-
     - name: RSAPIAutomation
       run: ./gradlew clean test  
 
