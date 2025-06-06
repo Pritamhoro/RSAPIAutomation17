@@ -28,14 +28,6 @@ jobs:
       - name: Run tests
         run: ./gradlew clean test
 
-      - name: Publish Test Report
-        if: always()
-        uses: dorny/test-reporter@v1
-        with:
-          name: TestNG Results
-          path: target/surefire-reports/junitreports/TEST-*.xml
-          reporter: java-junit
-
       - name: List dependency graph files
         run: ls -l dependency-graph-reports || echo "No dependency-graph-reports directory"
 
