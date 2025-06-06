@@ -30,5 +30,8 @@ jobs:
       - name: Build project
         run: ./gradlew clean build
 
+      - name: List dependency graph reports
+        run: ls -la dependency-graph-reports || echo "No reports generated"
+
       - name: Submit dependency graph
         uses: gradle/actions/dependency-submission@v3
