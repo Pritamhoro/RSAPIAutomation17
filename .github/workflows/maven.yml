@@ -13,7 +13,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-      dependencies: write
 
     steps:
       - uses: actions/checkout@v4
