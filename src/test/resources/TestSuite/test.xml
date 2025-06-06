@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<suite name="SampleTestSuite" verbose="1" parallel="tests" thread-count="2">
+    <test name="LoginTests">
+        <classes>
+            <class name="AuthService"/>
+        </classes>
+    </test>
+</suite>

@@ -10,12 +10,13 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.5.5'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.13.1'
+    testImplementation 'org.testng:testng:7.11.0'
+    testImplementation 'io.rest-assured:rest-assured:5.5.5'
+    implementation 'com.google.code.gson:gson:2.13.1'
 }
 
 test {
-    useJUnitPlatform()
+    useTestNG {
+        suites 'src/test/resources/TestSuite/test.xml'
+    }
 }
