@@ -1,8 +1,5 @@
 name: GithubAction
 
-permissions:
-  contents: read
-
 on:
   push:
     branches:
@@ -25,14 +22,8 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
       - name: Build project and test
         run: ./gradlew clean test
-
-      - name: List dependency graph reports
-        run: ls -l dependency-graph-reports/
 
       - name: Submit dependency graph
         uses: gradle/actions/dependency-submission@v3
