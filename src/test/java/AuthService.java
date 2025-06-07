@@ -1,4 +1,5 @@
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
 
@@ -21,6 +22,18 @@ public class AuthService
                 .body(payload)
                 .when()
                 .post("/api/v1/auth/login");
+
+        JsonPath jsonpath = response.then()
+                .extract()
+                .jsonPath();
+        Object token = jsonpath.get("access_token");
+        given()
+                .header("Authorization","Bearer "+token)
+                .when()
+                .get("/api/v1/auth/profile")
+                .then()
+                .log()
+                .body();
 
     }
 }
