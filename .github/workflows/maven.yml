@@ -38,10 +38,10 @@ jobs:
           echo "Looking for test result XMLs..."
           find . -type f -name "*.xml" | grep test-results || echo "No test result XML files found"
 
-      # - name: Publish JUnit Test Report
-      #   if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
-      #   uses: dorny/test-reporter@v1
-      #   with:
-      #     name: JUnit Report
-      #     path: ./build/test-results/test/*.xml
-      #     reporter: java-junit
+      - name: Publish JUnit Test Report
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
+        uses: dorny/test-reporter@v1
+        with:
+          name: JUnit Report
+          path: ./build/test-results/test/*.xml
+          reporter: java-junit
