@@ -1,4 +1,4 @@
-name: GithubAction
+name: CI for Dev Branch
 
 on:
   push:
@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 11
         uses: actions/setup-java@v3
@@ -28,11 +29,24 @@ jobs:
       - name: Run tests
         run: ./gradlew clean test
 
+      - name: List generated test result files
+        run: |
+          echo "Listing test result XML files:"
+          find . -type f -name "*.xml" | grep test-results || echo "No test result XML files found"
+
       - name: List dependency graph files
-        run: ls -l dependency-graph-reports || echo "No dependency-graph-reports directory"
+        run: |
+          echo "Listing dependency graph files:"
+          ls -l dependency-graph-reports || echo "No dependency-graph-reports directory"
 
       - name: Show dependency graph content (first 20 lines)
-        run: head -n 20 dependency-graph-reports/githubaction-build.json || echo "No dependency graph file"
+        id: show-dependency-graph-content
+        run: |
+          if [ -f dependency-graph-reports/githubaction-build.json ]; then
+            head -n 20 dependency-graph-reports/githubaction-build.json
+          else
+            echo "No dependency graph file"
+          fi
 
       - name: Submit dependency graph
         if: ${{ success() && steps.show-dependency-graph-content.outcome == 'success' }}
@@ -41,4 +55,10 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           report-path: dependency-graph-reports/githubaction-build.json
 
-
+      - name: Publish JUnit Test Report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: JUnit Report
+          path: ./build/test-results/test/*.xml
+          reporter: java-junit
