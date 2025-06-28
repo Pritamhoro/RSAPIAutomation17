@@ -17,7 +17,7 @@ dependencies {
 
 test {
     useTestNG {
-        suites 'src/test/resources/TestSuite/test.xml'  // Path to your TestNG suite
+         suites 'src/test/resources/TestSuite/test.xml'  // Path to your TestNG suite
     }
 
     // ✅ Ensures test output is shown in CLI
