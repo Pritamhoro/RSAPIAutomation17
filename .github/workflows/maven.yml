@@ -33,8 +33,13 @@ jobs:
       - name: Run tests
         run: ./gradlew clean test
 
+      - name: List test result files
+        run: |
+          echo "Looking for test result XMLs..."
+          find . -type f -name "*.xml" | grep test-results || echo "No test result XML files found"
+
       - name: Publish JUnit Test Report
-        if: always()
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
         uses: dorny/test-reporter@v1
         with:
           name: JUnit Report
