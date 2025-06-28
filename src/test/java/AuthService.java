@@ -2,43 +2,66 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import logs.RequestPayload;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.net.StandardSocketOptions;
-import java.util.*;
-
 
 import static io.restassured.RestAssured.*;
 
-public class AuthService
-{
+public class AuthService {
+
+    private static final String BASE_URI = "https://api.escuelajs.co";
+    private static final String LOGIN_ENDPOINT = "/api/v1/auth/login";
+    private static final String PROFILE_ENDPOINT = "/api/v1/auth/profile";
+
+    @BeforeClass
+    public void setup() {
+        baseURI = BASE_URI;
+    }
+
+    /**
+     * Test login and fetch user profile from Platzi Fake Store API
+     */
     @Test
-    public static void Platzi_Fake_Store_API()
-    {
-        RequestPayload requestPayload=new RequestPayload();
+    public void testLoginAndGetProfile() {
+        RequestPayload requestPayload = new RequestPayload();
         requestPayload.setEmail("john@mail.com");
         requestPayload.setPassword("changeme");
-        baseURI="https://api.escuelajs.co";
-        Response response = given()
+
+        // Login and get access token
+        Response loginResponse = given()
                 .contentType(ContentType.JSON)
                 .body(requestPayload)
                 .when()
-                .post("/api/v1/auth/login");
-        response.then()
-                .log()
-                .body();
-        System.out.println("===================><=================");
-        JsonPath jsonpath = response.then()
-                .extract()
-                .jsonPath();
-        Object token = jsonpath.get("access_token");
-        given()
-                .header("Authorization","Bearer "+token)
-                .when()
-                .get("/api/v1/auth/profile")
-                .then()
-                .log()
-                .body();
+                .post(LOGIN_ENDPOINT);
 
+        // Validate login success
+        loginResponse.then()
+                .statusCode(201)  // or 200 depending on API spec
+                .log().body();
+
+        String accessToken = extractToken(loginResponse);
+        Assert.assertNotNull(accessToken, "Access token should not be null");
+
+        // Use the access token to get user profile
+        Response profileResponse = given()
+                .header("Authorization", "Bearer " + accessToken)
+                .when()
+                .get(PROFILE_ENDPOINT);
+
+        profileResponse.then()
+                .statusCode(200)
+                .log().body();
+    }
+
+    /**
+     * Extracts access token from login response
+     *
+     * @param response login Response object
+     * @return access token string
+     */
+    private String extractToken(Response response) {
+        JsonPath jsonPath = response.jsonPath();
+        return jsonPath.getString("access_token");
     }
 }

@@ -2,11 +2,9 @@ name: CI for Dev Branch
 
 on:
   push:
-    branches:
-      - dev
+    branches: [ dev ]
   pull_request:
-    branches:
-      - dev
+    branches: [ dev ]
 
 permissions:
   contents: read
@@ -30,18 +28,10 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Run tests
+      - name: Run TestNG Suite
         run: ./gradlew clean test
 
-      - name: List test result files
+      - name: Display Test Results (if any)
         run: |
-          echo "Looking for test result XMLs..."
+          echo "Checking for XML reports..."
           find . -type f -name "*.xml" | grep test-results || echo "No test result XML files found"
-
-      - name: Publish JUnit Test Report
-        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
-        uses: dorny/test-reporter@v1
-        with:
-          name: JUnit Report
-          path: ./build/test-results/test/*.xml
-          reporter: java-junit
