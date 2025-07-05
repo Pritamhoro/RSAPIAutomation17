@@ -1,0 +1,53 @@
+name: Manual CI Trigger
+
+on:
+  push:
+    branches: [dev, maintenance, main]
+  pull_request:
+    branches: [dev, maintenance, main]
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Manual Trigger Automation Suite'
+        required: false
+        default: 'smoke'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run tests
+        run: |
+          echo "Running ${{ github.event.inputs.test_type }} tests..."
+          ./gradlew clean test
+
+      - name: List test result files
+        run: |
+          echo "Looking for test result XMLs..."
+          find . -type f -name "*.xml" | grep test-results || echo "No test result XML files found"
+
+      # - name: Publish JUnit Test Report
+      #   if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push'
+      #   uses: dorny/test-reporter@v1
+      #   with:
+      #     name: JUnit Report
+      #     path: ./build/test-results/test/*.xml
+      #     reporter: java-junit
